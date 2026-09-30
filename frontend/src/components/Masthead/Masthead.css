@@ -1,0 +1,145 @@
+/* ── Masthead ─────────────────────────────────────────────────────── */
+.masthead {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--masthead-height);
+  background: var(--color-surface);
+  border-bottom: var(--border-hairline);
+}
+
+.masthead__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+}
+
+/* ── Wordmark ─────────────────────────────────────────────────────── */
+.masthead__wordmark {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-right: var(--space-2);
+}
+
+.masthead__wordmark-text {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-pine);
+  letter-spacing: -0.02em;
+  font-style: italic;
+}
+
+/* ── Primary nav ──────────────────────────────────────────────────── */
+.masthead__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  height: 100%;
+}
+
+.masthead__nav-link {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  height: 100%;
+  padding: 0 var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  transition: color var(--transition-fast);
+  text-decoration: none;
+  letter-spacing: 0.01em;
+}
+
+.masthead__nav-link:hover {
+  color: var(--color-ink);
+  text-decoration: none;
+}
+
+.masthead__nav-link--active {
+  color: var(--color-pine);
+  font-weight: var(--weight-semibold);
+}
+
+.masthead__nav-link--active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: var(--space-2);
+  right: var(--space-2);
+  height: 2px;
+  background: var(--color-pine);
+}
+
+/* ── Engine status ────────────────────────────────────────────────── */
+.masthead__engine {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.masthead__engine-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.masthead__engine-divider {
+  color: var(--color-hairline);
+  font-size: var(--text-xs);
+  user-select: none;
+}
+
+.masthead__engine-stat {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+/* ── Reviewing as ─────────────────────────────────────────────────── */
+.masthead__reviewer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+  padding-left: var(--space-4);
+  border-left: var(--border-hairline);
+}
+
+.masthead__reviewer-label {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+}
+
+.masthead__reviewer-input {
+  width: 120px;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--text-xs);
+  background: var(--color-canvas);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  color: var(--color-ink);
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.masthead__reviewer-input:focus {
+  border-color: var(--color-pine);
+}
+
+.masthead__reviewer-input::placeholder {
+  color: var(--color-low);
+}

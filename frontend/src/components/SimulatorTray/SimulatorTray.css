@@ -1,0 +1,130 @@
+/* ── Simulator Tray ───────────────────────────────────────────────── */
+.sim-tray {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--sim-tray-height);
+  background: var(--color-surface);
+  border-top: var(--border-hairline);
+}
+
+.sim-tray__inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: 0 var(--content-padding);
+}
+
+/* ── Label ────────────────────────────────────────────────────────── */
+.sim-tray__label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-low);
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* ── Scenario buttons ─────────────────────────────────────────────── */
+.sim-tray__scenarios {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  /* hide scroll bar on WebKit */
+  scrollbar-width: none;
+}
+
+.sim-tray__scenarios::-webkit-scrollbar {
+  display: none;
+}
+
+.sim-tray__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-muted);
+  background: var(--color-canvas);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    color var(--transition-fast),
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.sim-tray__btn:hover:not(:disabled) {
+  color: var(--color-pine);
+  border-color: var(--color-pine);
+  background: rgba(15, 74, 63, 0.04);
+}
+
+.sim-tray__btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.sim-tray__btn--running {
+  color: var(--color-pine);
+  border-color: var(--color-pine);
+}
+
+/* ── Feedback strip ───────────────────────────────────────────────── */
+.sim-tray__feedback {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-xs);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-md);
+  border: var(--border-hairline);
+  flex-shrink: 0;
+  max-width: 420px;
+  overflow: hidden;
+}
+
+.sim-tray__feedback-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sim-tray__feedback-link {
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast);
+}
+
+.sim-tray__feedback-link:hover {
+  opacity: 1;
+  text-decoration: none;
+}
+
+.sim-tray__feedback--ok {
+  color: var(--color-pine);
+  background: rgba(15, 74, 63, 0.06);
+  border-color: rgba(15, 74, 63, 0.2);
+}
+
+.sim-tray__feedback--error {
+  color: var(--color-risk-high);
+  background: var(--color-risk-high-bg);
+  border-color: rgba(194, 30, 76, 0.2);
+}

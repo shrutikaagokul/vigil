@@ -1,0 +1,211 @@
+/* ── Evidence Renderer ─────────────────────────────────────────────── */
+
+.evidence {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* ── Geography ─────────────────────────────────────────────────────── */
+.evidence--geo {}
+
+.evidence-geo__route {
+  width: 100%;
+  max-width: 320px;
+}
+
+.evidence-geo__route svg {
+  width: 100%;
+  height: auto;
+}
+
+.evidence-geo__labels {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.evidence-geo__place {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.evidence-geo__place--dest {
+  flex-direction: row-reverse;
+}
+
+.evidence-geo__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.evidence-geo__dot--origin {
+  background: var(--color-pine);
+}
+
+.evidence-geo__dot--dest {
+  background: var(--color-risk-high);
+}
+
+.evidence-geo__place-name {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+}
+
+.evidence-geo__place-role {
+  font-size: var(--text-xs);
+}
+
+.evidence-geo__stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.evidence-geo__stats dt {
+  color: var(--color-muted);
+}
+
+.evidence-geo__speed {
+  color: var(--color-risk-high);
+  font-weight: var(--weight-medium);
+}
+
+/* ── Velocity ──────────────────────────────────────────────────────── */
+.evidence--velocity {}
+
+.evidence-velocity__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.evidence-velocity__count {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-risk-high);
+  line-height: 1;
+}
+
+.evidence-velocity__label {
+  font-size: var(--text-sm);
+}
+
+.evidence-velocity__ticks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  align-items: center;
+}
+
+.evidence-velocity__tick {
+  display: inline-block;
+  width: 8px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--color-hairline);
+}
+
+.evidence-velocity__tick--over {
+  background: var(--color-risk-high);
+}
+
+.evidence-velocity__overflow {
+  font-size: var(--text-xs);
+  color: var(--color-risk-high);
+  margin-left: var(--space-2);
+}
+
+.evidence-velocity__note {
+  font-size: var(--text-sm);
+}
+
+.evidence-velocity__over-label {
+  color: var(--color-risk-high);
+  font-weight: var(--weight-medium);
+}
+
+/* ── Amount ────────────────────────────────────────────────────────── */
+.evidence--amount {}
+
+.evidence-amount__stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.evidence-amount__stats dt {
+  color: var(--color-muted);
+}
+
+.evidence-amount__band {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.evidence-amount__band-track {
+  position: relative;
+  height: 10px;
+  background: var(--color-canvas);
+  border: var(--border-hairline);
+  border-radius: var(--radius-pill);
+  overflow: visible;
+}
+
+.evidence-amount__band-normal {
+  position: absolute;
+  left: 20%;
+  right: 40%;
+  top: 0;
+  bottom: 0;
+  background: rgba(15, 74, 63, 0.12);
+  border-radius: var(--radius-pill);
+}
+
+.evidence-amount__band-marker {
+  position: absolute;
+  top: -4px;
+  width: 4px;
+  height: 18px;
+  background: var(--color-risk-high);
+  border-radius: 2px;
+  transform: translateX(-50%);
+}
+
+.evidence-amount__band-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.evidence-amount__this-label {
+  color: var(--color-risk-high);
+  font-weight: var(--weight-medium);
+}
+
+/* ── Generic ───────────────────────────────────────────────────────── */
+.evidence--generic {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.evidence--generic dt {
+  color: var(--color-muted);
+  text-transform: capitalize;
+}
+
+.evidence--generic dd {
+  color: var(--color-ink);
+  word-break: break-all;
+}

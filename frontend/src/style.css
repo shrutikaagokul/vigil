@@ -1,0 +1,157 @@
+/*
+ * Vigil – Global stylesheet
+ * Imports tokens then applies base reset + typography + utilities.
+ */
+
+@import './tokens.css';
+
+/* ── Base reset ────────────────────────────────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-ink);
+  background-color: var(--color-canvas);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Links ────────────────────────────────────────────────────────── */
+a {
+  color: var(--color-pine);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Headings ─────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-tight);
+  color: var(--color-ink);
+}
+
+/* ── Monospaced elements ──────────────────────────────────────────── */
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+}
+
+/* ── Form primitives ──────────────────────────────────────────────── */
+input, select, textarea, button {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+}
+
+/* ── Images ────────────────────────────────────────────────────────── */
+img, svg {
+  display: block;
+  max-width: 100%;
+}
+
+/* ── Lists ─────────────────────────────────────────────────────────── */
+ul, ol {
+  list-style: none;
+}
+
+/* ── HR / hairlines ────────────────────────────────────────────────── */
+hr {
+  border: none;
+  border-top: var(--border-hairline);
+}
+
+/* ── App shell layout ─────────────────────────────────────────────── */
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  /* Reserve space for fixed masthead + fixed sim-tray */
+  padding-top: var(--masthead-height);
+  padding-bottom: var(--sim-tray-height);
+}
+
+.page-content {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-max-width);
+  margin: 0 auto;
+  padding: var(--space-8) var(--content-padding);
+}
+
+/* ── Utility classes ──────────────────────────────────────────────── */
+.mono {
+  font-family: var(--font-mono);
+}
+
+.display {
+  font-family: var(--font-display);
+}
+
+.muted {
+  color: var(--color-muted);
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* ── Hairline divider ─────────────────────────────────────────────── */
+.divider {
+  height: 1px;
+  background: var(--color-hairline);
+  border: none;
+}
+
+/* ── Status dot ───────────────────────────────────────────────────── */
+.status-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-low);
+}
+.status-dot--live {
+  background: var(--color-pine);
+}
+.status-dot--error {
+  background: var(--color-risk-high);
+}

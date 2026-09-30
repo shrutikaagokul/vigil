@@ -1,0 +1,194 @@
+/* ── TransactionRow ────────────────────────────────────────────────── */
+
+.txrow {
+  display: grid;
+  /* heat | score | tier | details | amount | time | alert */
+  grid-template-columns: 4px 48px 88px 1fr 100px 100px 20px;
+  align-items: center;
+  gap: 0 var(--space-4);
+  padding: var(--space-3) var(--space-5) var(--space-3) 0;
+  border-bottom: var(--border-hairline);
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  outline: none;
+  position: relative;
+}
+
+.txrow:last-child {
+  border-bottom: none;
+}
+
+.txrow:hover,
+.txrow:focus-visible {
+  background: var(--color-canvas);
+}
+
+.txrow:focus-visible {
+  box-shadow: inset 0 0 0 2px var(--color-pine);
+}
+
+/* ── New transaction fade-slide-in ─────────────────────────────────── */
+@keyframes txrow-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.txrow--new {
+  animation: txrow-enter 240ms ease-out both;
+}
+
+/* ── Heat bar ──────────────────────────────────────────────────────── */
+.txrow__heat {
+  align-self: stretch;
+  width: 4px;
+  border-radius: 0 2px 2px 0;
+  flex-shrink: 0;
+}
+
+/* ── Score ─────────────────────────────────────────────────────────── */
+.txrow__score {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.txrow__score-num {
+  font-size: var(--text-xl);
+  font-weight: var(--weight-medium);
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+/* ── Tier + tick ───────────────────────────────────────────────────── */
+.txrow__tier {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.txrow__tier-label {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Four-segment risk tick */
+.risk-tick {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.risk-tick__seg {
+  display: inline-block;
+  width: 12px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-hairline);
+}
+
+/* ── Details ───────────────────────────────────────────────────────── */
+.txrow__details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.txrow__merchant {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.txrow__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.txrow__meta-item {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+  white-space: nowrap;
+}
+
+.txrow__category {
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--color-canvas);
+  border: var(--border-hairline);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+}
+
+.txrow__rule {
+  font-size: 10px;
+  color: var(--color-muted);
+  background: var(--color-canvas);
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: 1px 5px;
+  white-space: nowrap;
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Amount ────────────────────────────────────────────────────────── */
+.txrow__amount {
+  text-align: right;
+}
+
+.txrow__amount-value {
+  font-size: var(--text-base);
+  font-weight: var(--weight-medium);
+  color: var(--color-ink);
+  letter-spacing: -0.01em;
+}
+
+/* ── Time ──────────────────────────────────────────────────────────── */
+.txrow__time {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.txrow__rel-time {
+  font-size: var(--text-xs);
+  color: var(--color-muted);
+}
+
+.txrow__utc-time {
+  font-size: 10px;
+  color: var(--color-low);
+}
+
+/* ── Alert pip ─────────────────────────────────────────────────────── */
+.txrow__alert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.txrow__alert-pip {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
