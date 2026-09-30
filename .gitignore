@@ -1,0 +1,19 @@
+# VIGIL
+*.db*
+*.sqlite*
+.env
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+venv/
+.venv/
+node_modules/
+dist/
+build/
+*.egg-info/
+.eggs/
+.mypy_cache/
+.coverage
+htmlcov/
+.DS_Store
