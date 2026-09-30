@@ -1,0 +1,1 @@
+# Acentra Health domain plugin
