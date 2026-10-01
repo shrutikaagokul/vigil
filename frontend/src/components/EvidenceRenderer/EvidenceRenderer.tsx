@@ -12,6 +12,7 @@
  */
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import type { RuleResult, Transaction } from '../../api/transactions.ts';
 import './EvidenceRenderer.css';
 
@@ -248,7 +249,104 @@ const AmountEvidence: React.FC<AmountProps> = ({ rule, tx }) => {
   );
 };
 
-// ── 4. Generic fallback ────────────────────────────────────────────
+// ── 4. Duplicate claim evidence ───────────────────────────────────
+function fmtDollar(amount: number, currency: string = 'USD'): string {
+  try {
+    return new Intl.NumberFormat(undefined, {
+      style: 'currency',
+      currency,
+      minimumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`;
+  }
+}
+
+interface DuplicateClaimProps {
+  rule: RuleResult;
+  tx: Transaction;
+}
+
+const DuplicateClaimEvidence: React.FC<DuplicateClaimProps> = ({ rule, tx }) => {
+  const ev = rule.evidence ?? {};
+  const dupCount = (ev.duplicate_count as number | undefined) ?? (tx.is_duplicate_claim ? 1 : 0);
+  const exactMatches = ev.exact_amount_matches as number | undefined;
+  const duplicateIds = Array.isArray(ev.duplicate_txn_ids)
+    ? (ev.duplicate_txn_ids as string[]).filter(Boolean)
+    : [];
+  const providerId = (ev.provider_id as string | undefined) ?? tx.merchant_name;
+  const category = (ev.category as string | undefined) ?? tx.merchant_category;
+  const windowDays = ev.window_days as number | undefined;
+
+  const currentAmountStr = typeof ev.current_amount === 'number'
+    ? fmtDollar(ev.current_amount, tx.currency)
+    : fmtCurrency(tx.amount, tx.currency);
+
+  return (
+    <div className="evidence evidence--duplicate">
+      <div className="evidence-dup__hero">
+        <div className="evidence-dup__headline">
+          <span className="evidence-dup__count mono">{dupCount}</span>
+          <span className="evidence-dup__label">
+            potential duplicate claim{dupCount !== 1 ? 's' : ''} detected
+            {windowDays !== undefined ? ` within ${windowDays} days` : ''}
+          </span>
+        </div>
+        {exactMatches !== undefined && exactMatches > 0 && (
+          <span className="evidence-dup__tag evidence-dup__tag--exact">
+            ⚠ {exactMatches} Exact Amount Match{exactMatches !== 1 ? 'es' : ''}
+          </span>
+        )}
+      </div>
+
+      <dl className="evidence-dup__stats">
+        {category && (
+          <>
+            <dt>Procedure / Category</dt>
+            <dd className="mono">{category.replace(/_/g, ' ')}</dd>
+          </>
+        )}
+        {providerId && (
+          <>
+            <dt>Provider ID</dt>
+            <dd className="mono">{providerId}</dd>
+          </>
+        )}
+        <dt>Claim Amount</dt>
+        <dd className="mono">{currentAmountStr}</dd>
+        {windowDays !== undefined && (
+          <>
+            <dt>Lookback Window</dt>
+            <dd className="mono">{windowDays} days</dd>
+          </>
+        )}
+      </dl>
+
+      {duplicateIds.length > 0 && (
+        <div className="evidence-dup__section">
+          <span className="evidence-dup__section-title">
+            Matched Prior Claims ({duplicateIds.length})
+          </span>
+          <div className="evidence-dup__links" role="group" aria-label="Prior duplicate claims">
+            {duplicateIds.map(id => (
+              <Link
+                key={id}
+                to={`/transactions/${encodeURIComponent(id)}`}
+                className="evidence-dup__txn-link mono"
+                title={`Open matched claim ${id}`}
+              >
+                <span className="evidence-dup__txn-id">{id}</span>
+                <span className="evidence-dup__txn-arrow" aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ── 5. Generic fallback ────────────────────────────────────────────
 const GenericEvidence: React.FC<{ rule: RuleResult }> = ({ rule }) => {
   const ev = rule.evidence;
   if (!ev || Object.keys(ev).length === 0) {
@@ -278,9 +376,16 @@ const GenericEvidence: React.FC<{ rule: RuleResult }> = ({ rule }) => {
 function detectEvidenceType(
   rule: RuleResult,
   tx: Transaction,
-): 'geo' | 'velocity' | 'amount' | 'generic' {
+): 'geo' | 'velocity' | 'amount' | 'duplicate' | 'generic' {
   const id = rule.rule_id.toLowerCase();
   const ev = rule.evidence ?? {};
+
+  if (
+    id.includes('duplicate') ||
+    'duplicate_count' in ev ||
+    'duplicate_txn_ids' in ev ||
+    tx.is_duplicate_claim
+  ) return 'duplicate';
 
   if (
     id.includes('travel') || id.includes('geo') ||
@@ -311,8 +416,9 @@ interface Props {
 
 export const EvidenceRenderer: React.FC<Props> = ({ rule, tx }) => {
   const type = detectEvidenceType(rule, tx);
-  if (type === 'geo')      return <GeographyEvidence rule={rule} tx={tx} />;
-  if (type === 'velocity') return <VelocityEvidence  rule={rule} tx={tx} />;
-  if (type === 'amount')   return <AmountEvidence    rule={rule} tx={tx} />;
+  if (type === 'duplicate') return <DuplicateClaimEvidence rule={rule} tx={tx} />;
+  if (type === 'geo')       return <GeographyEvidence rule={rule} tx={tx} />;
+  if (type === 'velocity')  return <VelocityEvidence  rule={rule} tx={tx} />;
+  if (type === 'amount')    return <AmountEvidence    rule={rule} tx={tx} />;
   return <GenericEvidence rule={rule} />;
 };

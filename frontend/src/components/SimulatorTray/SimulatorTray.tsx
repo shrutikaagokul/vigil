@@ -55,6 +55,11 @@ const SCENARIOS: ScenarioConfig[] = [
     label: 'Duplicate Claim',
     title: 'POST /simulate?scenario=duplicate_claim — repeated / duplicate insurance claim',
   },
+  {
+    id: 'multi_trigger',
+    label: 'Multi-Vector Attack',
+    title: 'POST /simulate?scenario=multi_trigger — coordinated attack triggering multiple risk rules',
+  },
 ];
 
 interface FeedbackState {
@@ -137,7 +142,7 @@ export const SimulatorTray: React.FC<Props> = ({ onSimulated }) => {
             ) : feedback.result ? (
               <>
                 <span className="sim-tray__feedback-msg mono">
-                  ✓ {feedback.scenario.replace('_', ' ')}
+                  ✓ {feedback.scenario.replace(/_/g, ' ')}
                   {feedback.result.transaction?.risk_score !== undefined
                     ? ` · score ${feedback.result.transaction.risk_score}`
                     : ''}

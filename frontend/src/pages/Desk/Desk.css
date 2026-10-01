@@ -82,12 +82,121 @@
   color: var(--color-muted);
 }
 
+/* ── Compact Metrics Strip (editorial investigation style) ───────── */
+.desk__metrics-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-6);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-md);
+  margin-top: var(--space-2);
+}
+
+.desk__metric-item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.desk__metric-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--color-muted);
+  font-weight: var(--weight-medium);
+}
+
+.desk__metric-val {
+  font-size: var(--text-sm);
+  font-weight: var(--weight-semibold);
+  color: var(--color-ink);
+}
+
+.desk__metric-val--alert {
+  color: var(--color-risk-high);
+}
+
+.desk__metric-val--crit {
+  color: var(--color-risk-critical);
+}
+
+.desk__metric-val--high {
+  color: var(--color-risk-high);
+}
+
 /* ── Filter bar ───────────────────────────────────────────────────── */
 .desk__filters {
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-4);
   align-items: center;
+}
+
+/* ── Investigation Member Search Control ──────────────────────────── */
+.desk__search-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-width: 250px;
+}
+
+.desk__search-icon {
+  position: absolute;
+  left: 10px;
+  font-size: 14px;
+  color: var(--color-muted);
+  pointer-events: none;
+}
+
+.desk__search-input {
+  width: 100%;
+  height: 28px;
+  padding: 0 28px 0 28px;
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  color: var(--color-ink);
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.desk__search-input:focus {
+  border-color: var(--color-pine);
+  box-shadow: 0 0 0 1px var(--color-pine);
+}
+
+.desk__search-input::placeholder {
+  color: var(--color-low);
+  font-family: var(--font-sans);
+}
+
+.desk__search-clear {
+  position: absolute;
+  right: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: transparent;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 0;
+}
+
+.desk__search-clear:hover {
+  color: var(--color-ink);
+  background: var(--color-canvas);
 }
 
 .desk__filter-group {

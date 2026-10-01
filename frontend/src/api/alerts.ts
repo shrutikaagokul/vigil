@@ -61,22 +61,39 @@ export interface AlertAckPayload {
 // ── API helpers ────────────────────────────────────────────────────
 export const alertsApi = {
   list: async (): Promise<Alert[]> => {
+    let res: unknown;
     try {
-      const res = await client.get<Alert[] | { results?: Alert[]; alerts?: Alert[] }>('/api/alerts/');
-      if (Array.isArray(res)) return res;
-      if (res && Array.isArray((res as { results?: Alert[] }).results)) return (res as { results: Alert[] }).results;
-      if (res && Array.isArray((res as { alerts?: Alert[] }).alerts)) return (res as { alerts: Alert[] }).alerts;
-      return [];
-    } catch (err) {
-      if (err instanceof ApiError && (err.status === 404 || err.status === 502)) {
-        const res = await client.get<Alert[] | { results?: Alert[]; alerts?: Alert[] }>('/alerts');
-        if (Array.isArray(res)) return res;
-        if (res && Array.isArray((res as { results?: Alert[] }).results)) return (res as { results: Alert[] }).results;
-        if (res && Array.isArray((res as { alerts?: Alert[] }).alerts)) return (res as { alerts: Alert[] }).alerts;
-        return [];
+      res = await client.get<unknown>('/api/alerts');
+    } catch {
+      try {
+        res = await client.get<unknown>('/api/alerts/');
+      } catch {
+        res = await client.get<unknown>('/alerts');
       }
-      throw err;
     }
+
+    let list: Array<Record<string, unknown>> = [];
+    if (Array.isArray(res)) {
+      list = res as Array<Record<string, unknown>>;
+    } else if (res && typeof res === 'object') {
+      const obj = res as { results?: Array<Record<string, unknown>>; alerts?: Array<Record<string, unknown>> };
+      list = obj.results ?? obj.alerts ?? [];
+    }
+
+    return list.map(item => ({
+      id: String(item.id ?? ''),
+      title: (item.title as string) || `Alert for ${item.txn_id || item.transaction_id || 'transaction'}`,
+      body: (item.body as string) || (item.error as string) || undefined,
+      severity: (item.severity as AlertSeverity) || (item.status === 'FAILED' ? 'critical' : 'info'),
+      state: (item.state as AlertState) || 'open',
+      channel: (item.channel as AlertChannel) || 'console',
+      status: ((item.status as string) || 'sent').toLowerCase(),
+      error: (item.error as string) || undefined,
+      fallback_channel: (item.fallback_channel as AlertChannel) || undefined,
+      transaction_id: (item.transaction_id ?? item.txn_id) as string | undefined,
+      rule_id: item.rule_id as string | undefined,
+      created_at: (item.created_at ?? item.timestamp ?? new Date().toISOString()) as string,
+    }));
   },
 
   get: async (id: string): Promise<Alert> => {

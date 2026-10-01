@@ -209,3 +209,122 @@
   color: var(--color-ink);
   word-break: break-all;
 }
+
+/* ── Duplicate Claim Evidence ───────────────────────────────────────── */
+.evidence--duplicate {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.evidence-dup__hero {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.evidence-dup__headline {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.evidence-dup__count {
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-semibold);
+  color: var(--color-risk-critical, #B91C1C);
+  line-height: 1;
+}
+
+.evidence-dup__label {
+  font-size: var(--text-sm);
+  color: var(--color-ink);
+  font-weight: var(--weight-medium);
+}
+
+.evidence-dup__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  font-family: var(--font-mono);
+  background: rgba(185, 28, 28, 0.1);
+  color: var(--color-risk-critical, #B91C1C);
+  border: 1px solid rgba(185, 28, 28, 0.25);
+}
+
+.evidence-dup__stats {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--space-1) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.evidence-dup__stats dt {
+  color: var(--color-muted);
+}
+
+.evidence-dup__stats dd {
+  color: var(--color-ink);
+}
+
+.evidence-dup__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+  padding-top: var(--space-2);
+  border-top: var(--border-hairline);
+}
+
+.evidence-dup__section-title {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  color: var(--color-muted);
+  font-weight: var(--weight-semibold);
+}
+
+.evidence-dup__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.evidence-dup__txn-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-surface);
+  border: var(--border-hairline);
+  border-radius: var(--radius-sm);
+  color: var(--color-pine);
+  text-decoration: none;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  transition: all var(--transition-fast);
+}
+
+.evidence-dup__txn-link:hover {
+  background: #E8ECEB;
+  border-color: var(--color-pine);
+  color: var(--color-pine-hover);
+  text-decoration: none;
+}
+
+.evidence-dup__txn-arrow {
+  color: var(--color-muted);
+  transition: transform var(--transition-fast);
+}
+
+.evidence-dup__txn-link:hover .evidence-dup__txn-arrow {
+  transform: translateX(2px);
+  color: var(--color-pine);
+}
+

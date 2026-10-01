@@ -38,6 +38,7 @@ export function usePollTransactions(query: TransactionQuery = {}): PollState {
   const knownIds = useRef<Set<string>>(new Set());
 
   const refresh = useCallback(() => setTick(t => t + 1), []);
+  const queryStr = JSON.stringify(query);
 
   useEffect(() => {
     let cancelled = false;
@@ -47,6 +48,7 @@ export function usePollTransactions(query: TransactionQuery = {}): PollState {
       try {
         const data = await transactionsApi.list({
           ...query,
+          limit: 200,
           ordering: '-risk_score,-created_at',
           page_size: 200,
         });
@@ -91,7 +93,7 @@ export function usePollTransactions(query: TransactionQuery = {}): PollState {
       if (timerId) clearInterval(timerId);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tick]);
+  }, [tick, queryStr]);
 
   return { transactions, totalCount, loading, pollError, newIds, refresh };
 }

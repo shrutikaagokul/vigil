@@ -19,14 +19,18 @@
  */
 
 import React, {
+  useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 
 import { usePollTransactions } from '../../hooks/usePollTransactions.ts';
 import type { Transaction, RiskLevel, ReviewStatus } from '../../api/transactions.ts';
+import { metricsApi } from '../../api/metrics.ts';
+import type { DashboardMetrics } from '../../api/metrics.ts';
 
 import { LoadingPane } from '../../components/LoadingSpinner/index.ts';
 import { ErrorState } from '../../components/ErrorState/index.ts';
@@ -96,17 +100,50 @@ function buildSubline(
 
 // ── Component ──────────────────────────────────────────────────────
 export const Desk: React.FC<Props> = ({ registerRefresh }) => {
-  const { transactions, totalCount, loading, pollError, newIds, refresh } =
-    usePollTransactions();
-
-  // Register refresh with App so SimulatorTray can trigger it
-  useEffect(() => {
-    registerRefresh(refresh);
-  }, [registerRefresh, refresh]);
-
-  // ── Filters ──────────────────────────────────────────────────────
+  // ── Search & Filter State ─────────────────────────────────────────
+  const [memberInput, setMemberInput]   = useState('');
+  const [memberFilter, setMemberFilter] = useState('');
   const [tierFilter, setTierFilter]     = useState<TierFilter>('');
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('');
+
+  // Debounce member ID search input (350ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setMemberFilter(memberInput.trim());
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [memberInput]);
+
+  const query = useMemo(() => {
+    return memberFilter ? { member_id: memberFilter } : {};
+  }, [memberFilter]);
+
+  const { transactions, totalCount, loading, pollError, newIds, refresh } =
+    usePollTransactions(query);
+
+  // ── Dashboard Metrics (GET /api/dashboard/metrics) ────────────────
+  const [metrics, setMetrics] = useState<DashboardMetrics | null>(null);
+
+  const loadMetrics = useCallback(async () => {
+    try {
+      const data = await metricsApi.get();
+      setMetrics(data);
+    } catch {
+      // Gracefully retain existing state on network hiccup
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadMetrics();
+  }, [loadMetrics]);
+
+  // Register refresh with App so SimulatorTray can trigger immediate re-poll
+  useEffect(() => {
+    registerRefresh(() => {
+      refresh();
+      void loadMetrics();
+    });
+  }, [registerRefresh, refresh, loadMetrics]);
 
   // ── "N new" indicator while scrolled ─────────────────────────────
   const listRef       = useRef<HTMLDivElement>(null);
@@ -141,8 +178,16 @@ export const Desk: React.FC<Props> = ({ registerRefresh }) => {
   const waitingGroup  = filtered.filter(tx => !isResolved(tx)).sort(sortByRiskThenDate);
   const resolvedGroup = filtered.filter(tx => isResolved(tx)).sort(sortByRiskThenDate);
 
-  // Counts for headline (unfiltered, from full data)
-  const pendingCount = transactions.filter(tx => tx.review_status === 'pending').length;
+  // Counts for headline:
+  // When filtering by member, use member-specific count.
+  // When showing all, use authoritative backend metrics.flagged.
+  const pendingCount = memberFilter
+    ? transactions.filter(tx => tx.review_status === 'pending').length
+    : (metrics?.flagged ?? transactions.filter(tx => tx.review_status === 'pending').length);
+
+  const headlineTotal = memberFilter
+    ? totalCount
+    : (metrics?.total_transactions ?? totalCount);
 
   // ── Initial load ─────────────────────────────────────────────────
   if (loading) return <LoadingPane label="Loading transactions…" />;
@@ -190,17 +235,76 @@ export const Desk: React.FC<Props> = ({ registerRefresh }) => {
       {/* ── Editorial headline ───────────────────────────────────── */}
       <header className="desk__header">
         <h1 className="desk__headline display">
-          {buildHeadline(pendingCount, totalCount)}
+          {buildHeadline(pendingCount, headlineTotal)}
         </h1>
-        {transactions.length > 0 && (
-          <p className="desk__subline muted">
-            {buildSubline(transactions, totalCount)}
-          </p>
+        <p className="desk__subline muted">
+          {memberFilter
+            ? `Showing ${transactions.length} claim${transactions.length !== 1 ? 's' : ''} for member ${memberFilter}.`
+            : metrics
+              ? `${metrics.total_transactions} total claims · ${metrics.flagged} waiting · ${metrics.cleared} cleared · ${metrics.reviewed} reviewed · ${metrics.clean} clean baseline.`
+              : transactions.length > 0 ? buildSubline(transactions, totalCount) : ''}
+        </p>
+
+        {/* ── Compact Metrics Strip (from backend GET /api/dashboard/metrics) ─ */}
+        {metrics && !memberFilter && (
+          <div className="desk__metrics-strip" role="region" aria-label="System overview">
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">Flagged</span>
+              <span className="desk__metric-val mono desk__metric-val--alert">{metrics.flagged}</span>
+            </div>
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">Avg Risk</span>
+              <span className="desk__metric-val mono">{metrics.avg_risk_score}</span>
+            </div>
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">Critical Tier</span>
+              <span className="desk__metric-val mono desk__metric-val--crit">{metrics.by_tier.CRITICAL ?? 0}</span>
+            </div>
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">High Tier</span>
+              <span className="desk__metric-val mono desk__metric-val--high">{metrics.by_tier.HIGH ?? 0}</span>
+            </div>
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">Alerts Out</span>
+              <span className="desk__metric-val mono">{metrics.alert_count}</span>
+            </div>
+            <div className="desk__metric-item">
+              <span className="desk__metric-label">Clean Baseline</span>
+              <span className="desk__metric-val mono muted">{metrics.clean}</span>
+            </div>
+          </div>
         )}
       </header>
 
       {/* ── Filter bar ───────────────────────────────────────────── */}
       <div className="desk__filters" role="group" aria-label="Filter transactions">
+        {/* Member Search input */}
+        <div className="desk__search-wrap">
+          <span className="desk__search-icon" aria-hidden="true">⌕</span>
+          <input
+            type="text"
+            className="desk__search-input mono"
+            placeholder="Filter by Member ID (e.g. MBR-1029)…"
+            value={memberInput}
+            onChange={e => setMemberInput(e.target.value)}
+            aria-label="Filter by Member ID"
+          />
+          {memberInput && (
+            <button
+              type="button"
+              className="desk__search-clear"
+              onClick={() => {
+                setMemberInput('');
+                setMemberFilter('');
+              }}
+              aria-label="Clear member filter"
+              title="Clear search"
+            >
+              ×
+            </button>
+          )}
+        </div>
+
         {/* Tier filter */}
         <div className="desk__filter-group">
           <span className="desk__filter-label">Risk</span>
@@ -252,10 +356,10 @@ export const Desk: React.FC<Props> = ({ registerRefresh }) => {
         {filtered.length === 0 && (
           <EmptyState
             title={transactions.length === 0
-              ? 'No transactions yet'
+              ? memberFilter ? `No transactions for "${memberFilter}"` : 'No transactions yet'
               : 'Nothing matches your filters'}
             description={transactions.length === 0
-              ? 'Transactions will appear here as the engine processes them.'
+              ? memberFilter ? 'Check the Member ID or clear the search filter above.' : 'Transactions will appear here as the engine processes them.'
               : 'Try adjusting the risk or status filters above.'}
           />
         )}
